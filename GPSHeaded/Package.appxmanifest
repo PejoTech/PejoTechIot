@@ -1,22 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  xmlns:iot="http://schemas.microsoft.com/appx/manifest/iot/windows10"
-  IgnorableNamespaces="uap mp iot">
+  IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="PejoTechIot.HelloWorld-uwp"
-    Publisher="CN=PejoTech"
+    Name="3fd94177-969c-40a3-ba75-3cb49102b055"
+    Publisher="CN=Rick"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="f28611df-6091-4deb-80ff-7133f84cc5c5" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="3fd94177-969c-40a3-ba75-3cb49102b055" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>PejoTechIot.HelloWorld</DisplayName>
-    <PublisherDisplayName>PejoTech</PublisherDisplayName>
+    <DisplayName>GPSHeaded</DisplayName>
+    <PublisherDisplayName>Rick</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -29,28 +28,27 @@
   </Resources>
 
   <Applications>
-    <Application Id="App">
+    <Application Id="App"
+      Executable="$targetnametoken$.exe"
+      EntryPoint="GPSHeaded.App">
       <uap:VisualElements
-        DisplayName="PejoTechIot.HelloWorld"
+        DisplayName="GPSHeaded"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="PejoTechIot.HelloWorld"
-        BackgroundColor="transparent"
-        AppListEntry="none">
+        Description="GPSHeaded"
+        BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
-      <Extensions>
-        <Extension Category="windows.backgroundTasks" EntryPoint="PejoTechIot.HelloWorld.StartupTask">
-          <BackgroundTasks>
-            <iot:Task Type="startup" />
-          </BackgroundTasks>
-        </Extension>
-      </Extensions>
     </Application>
   </Applications>
 
   <Capabilities>
     <Capability Name="internetClient" />
+    <DeviceCapability Name="serialcommunication">
+      <Device Id="any">
+        <Function Type="name:serialPort" />
+      </Device>
+    </DeviceCapability>  
   </Capabilities>
 </Package>
