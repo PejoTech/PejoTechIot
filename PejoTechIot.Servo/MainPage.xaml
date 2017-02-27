@@ -1,0 +1,17 @@
+﻿<Page
+    x:Class="PejoTechIot.Servo.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PejoTechIot.Servo"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <RelativePanel HorizontalAlignment="Left" Height="429" Margin="50,50
+                       ,0,0" VerticalAlignment="Top" Width="791">
+            <Button x:Name="BtnMove" Content="Button" HorizontalAlignment="Left" Height="102" VerticalAlignment="Top" Width="185" Margin="10,10,-130.2,-79.2"/>
+        </RelativePanel>
+
+    </Grid>
+</Page>

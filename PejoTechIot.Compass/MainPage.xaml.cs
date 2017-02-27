@@ -17,6 +17,7 @@ namespace PejoTechIot.Compass
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private bool _loop;
         private const int ButtonPinNr = 21;
 
         public GpioPin GpioButtonPin { get; set; }
@@ -86,15 +87,18 @@ namespace PejoTechIot.Compass
 
         private void ButtonPin_ValueChanged(GpioPin sender, GpioPinValueChangedEventArgs e)
         {
-            if (e.Edge == GpioPinEdge.FallingEdge)
+            if (_loop)
             {
-                RefreshDirection();
+                if (e.Edge == GpioPinEdge.FallingEdge)
+                {
+                    RefreshDirection();
+                }
             }
         }
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
         {
-            while (true)
+            while (_loop)
             {
                 RefreshDirection();
             }
@@ -107,33 +111,33 @@ namespace PejoTechIot.Compass
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal, () =>
                 {
-                    txtX.Text = direction.X.ToString();
-                    txtY.Text = direction.Y.ToString();
-                    txtZ.Text = direction.Z.ToString();
+                    txtX.Text = direction.X.ToString(CultureInfo.InvariantCulture);
+                    txtY.Text = direction.Y.ToString(CultureInfo.InvariantCulture);
+                    txtZ.Text = direction.Z.ToString(CultureInfo.InvariantCulture);
 
-                    txtHeading.Text = (180 * Math.Atan2(direction.Y, direction.X) / Math.PI).ToString(CultureInfo.InvariantCulture);
+                    txtHeading.Text = ((180 * Math.Atan2(direction.Y, direction.X) / Math.PI) + 2.04).ToString(CultureInfo.InvariantCulture);
 
                     ////Direction(y > 0) = 90 - [arcTAN(x / y)] * 180 /¹
                     //if (direction.Y > 0)
                     //{
                     //    txtHeading.Text =
-                    //        (90 - Math.Atan2(direction.Y, direction.X) / Math.PI * 180).ToString(
+                    //        (90 - Math.Atan2(direction.Y, direction.X) * 180 / Math.PI).ToString(
                     //            CultureInfo.InvariantCulture);
                     //}
                     ////Direction(y < 0) = 270 - [arcTAN(x / y)] * 180 /¹
                     //else if (direction.Y < 0)
                     //{
                     //    txtHeading.Text =
-                    //        (270 - Math.Atan2(direction.Y, direction.X) / Math.PI * 180 ).ToString(
+                    //        (270 - Math.Atan2(direction.Y, direction.X) * 180 / Math.PI).ToString(
                     //            CultureInfo.InvariantCulture);
                     //}
                     ////Direction(y = 0, x < 0) = 180.0
-                    //else if (direction.Y == 0 && direction.X < 0)
+                    //else if (Math.Abs(direction.Y) < 0 && direction.X < 0)
                     //{
                     //    txtHeading.Text = "180.0";
                     //}
                     ////Direction(y = 0, x > 0) = 0.0
-                    //else
+                    //else if (Math.Abs(direction.Y) < 0 && direction.X > 0)
                     //{
                     //    txtHeading.Text = "0.0";
                     //}
