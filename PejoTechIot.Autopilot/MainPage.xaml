@@ -1,0 +1,68 @@
+﻿<Page
+    x:Class="PejoTechIot.Autopilot.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PejoTechIot.Autopilot"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <RelativePanel x:Name="RMC_Panel" HorizontalAlignment="Left" Height="442" Margin="35,32,0,0" VerticalAlignment="Top" Width="847">
+            <TextBox x:Name="TimeLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Time" VerticalAlignment="Top" Width="109" Margin="0,10,-37.8,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox x:Name="SpeedLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Speed" VerticalAlignment="Top" Width="109" Margin="0,63,-37.8,-71.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox x:Name="CourseLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Course" VerticalAlignment="Top" Width="109" Margin="0,116,-37.8,-124.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox x:Name="SppedKtsLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="kts" VerticalAlignment="Top" Width="63" Margin="299,63,-267.8,-71.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox x:Name="HeadingText" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="114,169,-294,-172.2" FontSize="24"/>
+                <TextBox x:Name="HeadingTextLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Heading" VerticalAlignment="Top" Width="109" Margin="0,169,-37.8,-177.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="CourseDegreeLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="°" VerticalAlignment="Top" Width="63" Margin="299,116,-267.8,-124.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="HeadingDegreeLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="°" VerticalAlignment="Top" Width="63" Margin="299,169,-267.8,-177.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="OffsetText" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="114,222,-294,-225.2" FontSize="24"/>
+                <TextBox x:Name="OffsetLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Offset" VerticalAlignment="Top" Width="109" Margin="0,222,-37.8,-230.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="OffsetDegreeLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="°" VerticalAlignment="Top" Width="63" Margin="299,222,-267.8,-230.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="TargetSpeedLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Target Speed" VerticalAlignment="Top" Width="154" Margin="354,10,-436,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="TargetSpeedText" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="537,10,-668,-13.2" FontSize="24" />
+                <TextBox x:Name="TargetSpeedKtsLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="kts" VerticalAlignment="Top" Width="43" Margin="673,10,-620.8,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="ToleranceLabel" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" Text="Tolerance" VerticalAlignment="Top" Width="140" Margin="368,132,-436.8,-117.6" FontSize="18" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="TxtToleranceSeconds" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="368,169,-460,-172.2" FontSize="24" />
+                <Button x:Name="TargetSpeedIncreaseButton" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="368,63,-364,-78.2" FontSize="24"/>
+                <Button x:Name="TargetSpeedDecreaseButton" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="460,63,-456,-78.2" FontSize="24"/>
+                <Button x:Name="TargetSpeedActivateButton" Content="GO!" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="131" Margin="537,63,-616,-78.2" FontSize="24"/>
+                <Button x:Name="BtnToleranceDecreaseTime" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="368,222,-364,-237.2" FontSize="24"/>
+                <Button x:Name="BtnToleranceIncreaseTime" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="460,222,-456,-237.2" FontSize="24"/>
+                <TextBox x:Name="TargetSpeedKtsabelCopy" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="t" VerticalAlignment="Top" Width="52" Margin="465,183,-365,-177.8" FontSize="18" IsReadOnly="True" BorderThickness="0" FontStyle="Italic"/>
+                <TextBox x:Name="TimeLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Time" VerticalAlignment="Top" Width="109" Margin="0,10,-37.8,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="TxtTime" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="114,10,-294,-13.2" FontSize="24"/>
+                <TextBox x:Name="SpeedLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Speed" VerticalAlignment="Top" Width="109" Margin="0,63,-37.8,-71.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="TxtSpeed" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="114,63,-294,-66.2" FontSize="24" />
+                <TextBox x:Name="TxtCourse" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="114,116,-294,-119.2" FontSize="24"/>
+                <TextBox x:Name="CourseLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Course" VerticalAlignment="Top" Width="109" Margin="0,116,-37.8,-124.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="SppedKtsLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="kts" VerticalAlignment="Top" Width="63" Margin="299,63,-267.8,-71.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="TxtSattelites" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="-29,-24,-36,0" FontSize="24" BorderThickness="0"/>
+                <TextBox x:Name="TxtHeading" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="114,169,-294,-172.2" FontSize="24"/>
+                <TextBox x:Name="HeadingTextLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Heading" VerticalAlignment="Top" Width="109" Margin="0,169,-37.8,-177.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="CourseDegreeLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="°" VerticalAlignment="Top" Width="63" Margin="299,116,-267.8,-124.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="HeadingDegreeLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="°" VerticalAlignment="Top" Width="63" Margin="299,169,-267.8,-177.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="TxtOffset" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="114,222,-294,-225.2" FontSize="24"/>
+                <TextBox x:Name="OffsetLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Offset" VerticalAlignment="Top" Width="109" Margin="0,222,-37.8,-230.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="OffsetDegreeLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="°" VerticalAlignment="Top" Width="63" Margin="299,222,-267.8,-230.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="TargetSpeedLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Target Speed" VerticalAlignment="Top" Width="154" Margin="354,10,-436,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="TxtTargetSpeed" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="537,10,-668,-13.2" FontSize="24" />
+                <TextBox x:Name="TargetSpeedKtsLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="kts" VerticalAlignment="Top" Width="43" Margin="673,10,-620.8,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="ToleranceLabel1" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" Text="Tolerance" VerticalAlignment="Top" Width="140" Margin="537,132,-605.8,-117.6" FontSize="18" IsReadOnly="True" BorderThickness="0"/>
+                <TextBox x:Name="TxtToleranceKts" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="537,169,-629,-172.2" FontSize="24" />
+                <Button x:Name="BtnTargetSpeedIncrease" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="368,63,-364,-78.2" FontSize="24"/>
+                <Button x:Name="BtnTargetSpeedDecrease" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="460,63,-456,-78.2" FontSize="24"/>
+                <Button x:Name="BtnTargetSpeedActivate" Content="GO!" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="131" Margin="537,63,-616,-78.2" FontSize="24"/>
+                <Button x:Name="BtnToleranceDecreaseKts" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="537,222,-533,-237.2" FontSize="24"/>
+                <Button x:Name="BtnToleranceIncreaseKts" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="629,222,-625,-237.2" FontSize="24"/>
+                <TextBox x:Name="TargetSpeedKtsLabel_Copy1" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="kts" VerticalAlignment="Top" Width="52" Margin="634,183,-534,-177.8" FontSize="18" IsReadOnly="True" BorderThickness="0" FontStyle="Italic"/>
+
+                <ScrollViewer Height="Auto" Margin="10,270,-698,-448">
+                    <TextBox x:Name="TxtDebug" Text="" AcceptsReturn="True" TextWrapping="Wrap" FontStyle="Italic" FontWeight="Bold" Height="163"/>
+                </ScrollViewer>
+
+        </RelativePanel>
+    </Grid>
+</Page>

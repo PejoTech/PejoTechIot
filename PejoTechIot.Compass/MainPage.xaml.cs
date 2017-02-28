@@ -17,7 +17,7 @@ namespace PejoTechIot.Compass
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private bool _loop;
+        private bool _loop = false;
         private const int ButtonPinNr = 21;
 
         public GpioPin GpioButtonPin { get; set; }
