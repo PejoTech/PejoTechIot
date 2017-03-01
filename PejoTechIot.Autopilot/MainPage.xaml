@@ -52,14 +52,14 @@
                 <TextBox x:Name="TargetSpeedKtsLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="kts" VerticalAlignment="Top" Width="43" Margin="673,10,-620.8,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
                 <TextBox x:Name="ToleranceLabel1" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" Text="Tolerance" VerticalAlignment="Top" Width="140" Margin="537,132,-605.8,-117.6" FontSize="18" IsReadOnly="True" BorderThickness="0"/>
                 <TextBox x:Name="TxtToleranceKts" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="537,169,-629,-172.2" FontSize="24" />
-                <Button x:Name="BtnTargetSpeedIncrease" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="368,63,-364,-78.2" FontSize="24"/>
-                <Button x:Name="BtnTargetSpeedDecrease" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="460,63,-456,-78.2" FontSize="24"/>
+                <Button x:Name="BtnTargetSpeedDecrease" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="368,63,-364,-78.2" FontSize="24"/>
+                <Button x:Name="BtnTargetSpeedIncrease" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="460,63,-456,-78.2" FontSize="24"/>
                 <Button x:Name="BtnTargetSpeedActivate" Content="GO!" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="131" Margin="537,63,-616,-78.2" FontSize="24"/>
                 <Button x:Name="BtnToleranceDecreaseKts" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="537,222,-533,-237.2" FontSize="24"/>
                 <Button x:Name="BtnToleranceIncreaseKts" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="629,222,-625,-237.2" FontSize="24"/>
                 <TextBox x:Name="TargetSpeedKtsLabel_Copy1" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="kts" VerticalAlignment="Top" Width="52" Margin="634,183,-534,-177.8" FontSize="18" IsReadOnly="True" BorderThickness="0" FontStyle="Italic"/>
 
-                <ScrollViewer Height="Auto" Margin="10,270,-698,-448">
+                <ScrollViewer Height="Auto" Margin="10,270,-698,-448" Name="svDebug">
                     <TextBox x:Name="TxtDebug" Text="" AcceptsReturn="True" TextWrapping="Wrap" FontStyle="Italic" FontWeight="Bold" Height="163"/>
                 </ScrollViewer>
 

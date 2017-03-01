@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -123,7 +124,7 @@ namespace PejoTechIot.Autopilot
         private void BtnToleranceDecreaseTime_Click(object sender, RoutedEventArgs e)
         {
             var tolerance = double.Parse(TxtToleranceSeconds.Text);
-            tolerance -= 0.1;
+            tolerance -= 1;
             TxtToleranceSeconds.Text = tolerance.ToString(CultureInfo.InvariantCulture);
 
             Log("Tolerance seconds -1");
@@ -132,7 +133,7 @@ namespace PejoTechIot.Autopilot
         private void BtnToleranceIncreaseTime_Click(object sender, RoutedEventArgs e)
         {
             var tolerance = double.Parse(TxtToleranceSeconds.Text);
-            tolerance += 0.1;
+            tolerance += 1;
             TxtToleranceSeconds.Text = tolerance.ToString(CultureInfo.InvariantCulture);
 
             Log("Tolerance seconds +1");
@@ -144,31 +145,13 @@ namespace PejoTechIot.Autopilot
 
         private async void StartGps()
         {
-            // see note below about changing baud rates.
             await _gps.ConnectToUARTAsync(9600);
 
-            // To change the baud rate on the GPS:
-            // 
-            // First, connect at the currently-set baud rate (as above)
-            // Then execute this section of code, substituting the desired baudrate
-            // in the SetBaudrate and ConnectToUART commands.
-            //  You can actually leave this code in place.  Once the baud rate is changed,
-            //  the first ConnectToUART and the SetBaudRate commands will have no effect.
-            //  The second ConnectToUART will become the operative function.
-            // Leaving it in here if you change the default baud rate will allow your 
-            //  program to recover in case power is lost to the GPS and it resets to factory defaults.
-            //
-            //if (gps.Connected)
-            //{
-            //    await gps.SetBaudRate(19200);
-            //    gps.DisconnectFromUART();
-            //    await gps.ConnectToUART(19200);
-            //}
 
             if (_gps.Connected)
             {
                 await _gps.SetSentencesReportingAsync(0, 1, 0, 1, 0, 0);
-                await _gps.SetUpdateFrequencyAsync(1);  //1Hz.  Change to 5 for 5Hz. Change to 10 for 10Hz.  Change to 0.1 for 0.1Hz.
+                await _gps.SetUpdateFrequencyAsync(2);  //1Hz.  Change to 5 for 5Hz. Change to 10 for 10Hz.  Change to 0.1 for 0.1Hz.
                 _gps.StartReading();
             }
         }
@@ -192,6 +175,7 @@ namespace PejoTechIot.Autopilot
         private void OnGgaEvent(object sender, Gps.GPSGGA gga)
         {
             TxtSattelites.Text = gga.Quality != Gps.GPSGGA.FixQuality.noFix ? gga.Satellites.ToString() : "";
+            svDebug.ScrollToVerticalOffset(0);
         }
 
         #endregion

@@ -3,7 +3,7 @@
     "AdafruitClassLibrary": "1.0.7",
     "Magellanic.I2c": "0.0.4-alpha",
     "Microsoft.IoT.Lightning": "1.1.0",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0"
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2"
   },
   "frameworks": {
     "uap10.0": {}
