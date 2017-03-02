@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Devices.Enumeration;
 using Windows.Devices.Gpio;
+using Windows.Devices.I2c;
 using Windows.Media.Core;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Magellanic.I2C;
+using Magellanic.I2C.Exceptions;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -21,8 +26,8 @@ namespace PejoTechIot.Compass
         private const int ButtonPinNr = 21;
 
         public GpioPin GpioButtonPin { get; set; }
-        
-        public Hmc5883L Compass { get; set; }
+
+        public static Hmc5883L Compass { get; set; }
 
         public MainPage()
         {
@@ -75,13 +80,18 @@ namespace PejoTechIot.Compass
 
         private async Task SetupCompass()
         {
-            Compass = new Hmc5883L();
+            string advancedQueryString = I2cDevice.GetDeviceSelector();
+            var deviceInformations = await DeviceInformation.FindAllAsync(advancedQueryString);
 
-            await Compass.Initialize();
-
-            if (Compass.IsConnected())
+            if (deviceInformations.Any())
             {
-                Compass.SetOperatingMode(Hmc5884LOperatingMode.ContinuousOperatingMode);
+                Compass = new Hmc5883L();
+                await Compass.Initialize();
+
+                if (Compass.IsConnected())
+                {
+                    Compass.SetOperatingMode(Hmc5884LOperatingMode.ContinuousOperatingMode);
+                }
             }
         }
 
@@ -116,31 +126,6 @@ namespace PejoTechIot.Compass
                     txtZ.Text = direction.Z.ToString(CultureInfo.InvariantCulture);
 
                     txtHeading.Text = ((180 * Math.Atan2(direction.Y, direction.X) / Math.PI) + 2.04).ToString(CultureInfo.InvariantCulture);
-
-                    ////Direction(y > 0) = 90 - [arcTAN(x / y)] * 180 /¹
-                    //if (direction.Y > 0)
-                    //{
-                    //    txtHeading.Text =
-                    //        (90 - Math.Atan2(direction.Y, direction.X) * 180 / Math.PI).ToString(
-                    //            CultureInfo.InvariantCulture);
-                    //}
-                    ////Direction(y < 0) = 270 - [arcTAN(x / y)] * 180 /¹
-                    //else if (direction.Y < 0)
-                    //{
-                    //    txtHeading.Text =
-                    //        (270 - Math.Atan2(direction.Y, direction.X) * 180 / Math.PI).ToString(
-                    //            CultureInfo.InvariantCulture);
-                    //}
-                    ////Direction(y = 0, x < 0) = 180.0
-                    //else if (Math.Abs(direction.Y) < 0 && direction.X < 0)
-                    //{
-                    //    txtHeading.Text = "180.0";
-                    //}
-                    ////Direction(y = 0, x > 0) = 0.0
-                    //else if (Math.Abs(direction.Y) < 0 && direction.X > 0)
-                    //{
-                    //    txtHeading.Text = "0.0";
-                    //}
                 });
         }
     }
