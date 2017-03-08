@@ -95,9 +95,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Drivers\HMC5883L.cs" />
-    <Compile Include="Drivers\IServoController.cs" />
-    <Compile Include="Drivers\ServoController.cs" />
+    <Compile Include="Controllers\HMC5883L.cs" />
+    <Compile Include="Controllers\IServoController.cs" />
+    <Compile Include="Controllers\ServoController.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

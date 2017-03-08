@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace PejoTechIot.Autopilot.Drivers
+namespace PejoTechIot.Autopilot.Controllers
 {
     public interface IServoController : IDisposable
     {

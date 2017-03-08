@@ -1,7 +1,7 @@
 ﻿using System;
 using Magellanic.I2C;
 
-namespace PejoTechIot.Autopilot.Drivers
+namespace PejoTechIot.Autopilot.Controllers
 {
     public class Hmc5883L : AbstractI2CDevice
     {

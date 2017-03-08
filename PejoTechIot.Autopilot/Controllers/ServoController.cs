@@ -4,7 +4,7 @@ using Windows.Devices;
 using Windows.Devices.Pwm;
 using Microsoft.IoT.Lightning.Providers;
 
-namespace PejoTechIot.Autopilot.Drivers
+namespace PejoTechIot.Autopilot.Controllers
 {
     public class ServoController : IServoController
     {

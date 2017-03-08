@@ -1,26 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
-using Windows.Devices.Gpio;
 using Windows.Devices.I2c;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using AdafruitClassLibrary;
-using PejoTechIot.Autopilot.Drivers;
+using PejoTechIot.Autopilot.Controllers;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -32,10 +21,17 @@ namespace PejoTechIot.Autopilot
     public sealed partial class MainPage : Page
     {
         private Gps _gps;
+
+        static ServoController _servo;
+
         private Task _chacheCompassTask;
-        private static List<CompassRawDataModel> _compassData = new List<CompassRawDataModel>();
-        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-        private CancellationToken _token = CancellationToken.None;
+
+        private static readonly List<CompassRawDataModel> CompassData = new List<CompassRawDataModel>();
+        private readonly CancellationTokenSource _compassTaskCancelToken = new CancellationTokenSource();
+        private CancellationToken _compassTaskToken = CancellationToken.None;
+
+        private readonly CancellationTokenSource _servoTaskCancelToken = new CancellationTokenSource();
+        private CancellationToken _servoTaskToken = CancellationToken.None;
 
         public static Hmc5883L Compass { get; set; }
 
@@ -44,11 +40,12 @@ namespace PejoTechIot.Autopilot
             this.InitializeComponent();
 
             Loaded += Page_Loaded;
+            Unloaded += Page_Unloaded;
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            _token = _cancellationTokenSource.Token;
+            _compassTaskToken = _compassTaskCancelToken.Token;
 
             for (int i = 0; i < 10; i++)
             {
@@ -74,23 +71,35 @@ namespace PejoTechIot.Autopilot
             {
                 StartGps();
 
-                StartCompass();
+                #region Compass Initialize
 
-                if (Compass.IsConnected())
-                {
-                    _chacheCompassTask = Task.Run(() =>
-                    {
-                        while (true)
-                        {
-                            _compassData.Add(Compass.GetRawData());
+                // TODO: Check I2C connection of RPi
+                //StartCompass();
 
-                            if (_token.IsCancellationRequested)
-                            {
-                                _token.ThrowIfCancellationRequested();
-                            }
-                        }
-                    }, _token);
-                }
+                //if (Compass.IsConnected())
+                //{
+                //    _chacheCompassTask = Task.Run(() =>
+                //    {
+                //        while (true)
+                //        {
+                //            CompassData.Add(Compass.GetRawData());
+
+                //            if (_compassTaskToken.IsCancellationRequested)
+                //            {
+                //                _compassTaskToken.ThrowIfCancellationRequested();
+                //            }
+                //        }
+                //    }, _compassTaskToken);
+                //}
+
+                #endregion
+
+                _servo = new ServoController(5);
+                await _servo.Connect();
+
+                Test();
+
+                //await ServoControlTask(_servo);
             }
             catch (Exception ex)
             {
@@ -98,9 +107,25 @@ namespace PejoTechIot.Autopilot
             }
         }
 
+        //private static async Task ServoControlTask(ServoController servo)
+        //{
+
+        //}
+
+        private static void Test()
+        {
+            _servo.SetPosition(0).AllowTimeToMove(1000).Go();
+            for (int i = 1; i < 180; i++)
+            {
+                //Log(string.Format("Moving servo to {0}", i));
+                _servo.SetPosition(i).AllowTimeToMove(10).Go();
+            }
+        }
+
+        #region Compass
+
         private async void StartCompass()
         {
-
             string advancedQueryString = I2cDevice.GetDeviceSelector();
             var deviceInformations = await DeviceInformation.FindAllAsync(advancedQueryString);
 
@@ -119,30 +144,9 @@ namespace PejoTechIot.Autopilot
                 Log("No I2C controllers are connected.");
             }
 
-            Compass = new Hmc5883L();
-            await Compass.Initialize();
-
-            if (Compass.IsConnected())
-            {
-                Compass.SetOperatingMode(Hmc5884LOperatingMode.ContinuousOperatingMode);
-            }
-
         }
 
-        private static void CacheCompassData()
-        {
-            //await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-            //    CoreDispatcherPriority.Normal, () =>
-            //    {
-            //        TxtHeading.Text = ((180 * Math.Atan2(direction.Y, direction.X) / Math.PI) + 2.04).ToString(CultureInfo.InvariantCulture);
-            //    });
-        }
-
-        private void Log(string s)
-        {
-            TxtDebug.Text += String.Format("{0}\r\n", s);
-            svDebug.ScrollToVerticalOffset(0);
-        }
+        #endregion
 
         #region Buttons
 
@@ -150,6 +154,7 @@ namespace PejoTechIot.Autopilot
 
         private void BtnTargetSpeedActivate_Click(object sender, RoutedEventArgs e)
         {
+            Test();
             Log("Activate");
         }
 
@@ -245,5 +250,16 @@ namespace PejoTechIot.Autopilot
         }
 
         #endregion
+
+        private void Log(string s)
+        {
+            TxtDebug.Text += String.Format("{0}\r\n", s);
+            svDebug.ScrollToVerticalOffset(0);
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _servo.Dispose();
+        }
     }
 }
