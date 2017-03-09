@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -23,17 +24,27 @@ namespace PejoTechIot.Autopilot
         private Gps _gps;
 
         static ServoController _servo;
+        private readonly CancellationToken _servoTaskCancellationToken = CancellationToken.None;
 
-        private Task _chacheCompassTask;
-
-        private static readonly List<CompassRawDataModel> CompassData = new List<CompassRawDataModel>();
-        private readonly CancellationTokenSource _compassTaskCancelToken = new CancellationTokenSource();
-        private CancellationToken _compassTaskToken = CancellationToken.None;
-
-        private readonly CancellationTokenSource _servoTaskCancelToken = new CancellationTokenSource();
-        private CancellationToken _servoTaskToken = CancellationToken.None;
+        private ObservableCollection<string> _debugList;
 
         public static Hmc5883L Compass { get; set; }
+        
+        public double Course { get; set; }
+
+        public double Speed { get; set; }
+
+        public DateTime Time { get; set; }
+
+        public int Sattelites { get; set; }
+
+        public double TargetSpeed { get; set; }
+
+        public double ToleranceSpeed { get; set; }
+
+        public double ToleranceSeconds { get; set; }
+
+        public int ServoPosition { get; set; }
 
         public MainPage()
         {
@@ -41,16 +52,16 @@ namespace PejoTechIot.Autopilot
 
             Loaded += Page_Loaded;
             Unloaded += Page_Unloaded;
+
+            DebugList.SelectionChanged += DebugList_Changed;
+            DebugList.Loaded += DebugList_Loaded;
+
+            _debugList = new ObservableCollection<string>();
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            _compassTaskToken = _compassTaskCancelToken.Token;
-
-            for (int i = 0; i < 10; i++)
-            {
-                Log("Lorem ipsum dolor sit amet \n\r");
-            }
+            ServoPosition = 0;
 
             TxtTargetSpeed.Text = "2.5";
             TxtToleranceKts.Text = "0.1";
@@ -94,12 +105,16 @@ namespace PejoTechIot.Autopilot
 
                 #endregion
 
+                #region Servo
+
                 _servo = new ServoController(5);
                 await _servo.Connect();
 
                 Test();
+                _servo.SetPosition(ServoPosition).AllowTimeToMove(500).Go();
+                await Task.Run(() => ServoControlTask(_servo), _servoTaskCancellationToken);
 
-                //await ServoControlTask(_servo);
+                #endregion
             }
             catch (Exception ex)
             {
@@ -107,17 +122,35 @@ namespace PejoTechIot.Autopilot
             }
         }
 
-        //private static async Task ServoControlTask(ServoController servo)
-        //{
+        private void ServoControlTask()
+        {
+            while (true)
+            {
+                var diff = TargetSpeed - Speed;
+                if (Math.Abs(diff) > ToleranceSpeed)
+                {
+                    if (diff < 0.0d)
+                    {
+                        ServoPosition += 1;
+                    }
+                    if (diff > 0.0d)
+                    {
+                        ServoPosition -= 1;
+                    }
 
-        //}
+                    _servo.SetPosition(ServoPosition).AllowTimeToMove(10).Go();
+                }
 
-        private static void Test()
+                Task.Delay((int) ToleranceSeconds).Wait();
+            }
+        }
+
+        private void Test()
         {
             _servo.SetPosition(0).AllowTimeToMove(1000).Go();
             for (int i = 1; i < 180; i++)
             {
-                //Log(string.Format("Moving servo to {0}", i));
+                Log(string.Format("Moving servo to {0}", i));
                 _servo.SetPosition(i).AllowTimeToMove(10).Go();
             }
         }
@@ -148,9 +181,13 @@ namespace PejoTechIot.Autopilot
 
         #endregion
 
-        #region Buttons
+        #region Controls
 
-
+        
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _servo.Dispose();
+        }
 
         private void BtnTargetSpeedActivate_Click(object sender, RoutedEventArgs e)
         {
@@ -162,54 +199,90 @@ namespace PejoTechIot.Autopilot
         {
             var targetSpeed = double.Parse(TxtTargetSpeed.Text);
             targetSpeed += 0.1;
-            TxtTargetSpeed.Text = targetSpeed.ToString(CultureInfo.InvariantCulture);
+            TargetSpeed = targetSpeed;
 
             Log("Target speed up 0.1 mph");
+
+            UpdateUi();
         }
 
         private void BtnTargetSpeedDecrease_Click(object sender, RoutedEventArgs e)
         {
             var targetSpeed = double.Parse(TxtTargetSpeed.Text);
             targetSpeed -= 0.1;
-            TxtTargetSpeed.Text = targetSpeed.ToString(CultureInfo.InvariantCulture);
+            TargetSpeed = targetSpeed;
 
             Log("Target speed down 0.1 mph");
+
+            UpdateUi();
         }
 
         private void BtnToleranceDecreaseKts_Click(object sender, RoutedEventArgs e)
         {
             var tolerance = double.Parse(TxtToleranceKts.Text);
             tolerance -= 0.1;
-            TxtToleranceKts.Text = tolerance.ToString(CultureInfo.InvariantCulture);
+            ToleranceSpeed = tolerance;
 
-            Log("Tolerance speed down 0.1 mph");
+            Log("ToleranceSpeed speed down 0.1 mph");
+
+            UpdateUi();
         }
 
         private void BtnToleranceIncreaseKts_Click(object sender, RoutedEventArgs e)
         {
             var tolerance = double.Parse(TxtToleranceKts.Text);
             tolerance += 0.1;
-            TxtToleranceKts.Text = tolerance.ToString(CultureInfo.InvariantCulture);
+            ToleranceSpeed = tolerance;
 
-            Log("Tolerance speed up 0.1 mph");
+            Log("ToleranceSpeed speed up 0.1 mph");
+
+            UpdateUi();
         }
 
         private void BtnToleranceDecreaseTime_Click(object sender, RoutedEventArgs e)
         {
             var tolerance = double.Parse(TxtToleranceSeconds.Text);
             tolerance -= 1;
-            TxtToleranceSeconds.Text = tolerance.ToString(CultureInfo.InvariantCulture);
+            ToleranceSeconds = tolerance;
 
-            Log("Tolerance seconds -1");
+            Log("ToleranceSpeed seconds -1");
+
+            UpdateUi();
         }
 
         private void BtnToleranceIncreaseTime_Click(object sender, RoutedEventArgs e)
         {
             var tolerance = double.Parse(TxtToleranceSeconds.Text);
             tolerance += 1;
-            TxtToleranceSeconds.Text = tolerance.ToString(CultureInfo.InvariantCulture);
+            ToleranceSeconds = tolerance;
 
-            Log("Tolerance seconds +1");
+            Log("ToleranceSpeed seconds +1");
+
+            UpdateUi();
+        }
+
+        private void DebugList_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            DebugListScrollToBottom();
+        }
+
+        private void DebugList_Loaded(object sender, RoutedEventArgs e)
+        {
+            DebugListScrollToBottom();
+        }
+
+        private void DebugListScrollToBottom()
+        {
+            if (DebugList.Items == null) return;
+
+            var selectedIndex = DebugList.Items.Count - 1;
+
+            if (selectedIndex < 0) return;
+
+            DebugList.SelectedIndex = selectedIndex;
+
+            DebugList.UpdateLayout();
+            DebugList.ScrollIntoView(DebugList.SelectedItem);
         }
 
         #endregion
@@ -228,38 +301,56 @@ namespace PejoTechIot.Autopilot
             if (_gps.Connected)
             {
                 await _gps.SetSentencesReportingAsync(0, 1, 0, 1, 0, 0);
-                await _gps.SetUpdateFrequencyAsync(1);  //1Hz.  Change to 5 for 5Hz. Change to 10 for 10Hz.  Change to 0.1 for 0.1Hz.
+                await _gps.SetUpdateFrequencyAsync(10);  //1Hz.  Change to 5 for 5Hz. Change to 10 for 10Hz.  Change to 0.1 for 0.1Hz.
                 _gps.StartReading();
             }
         }
 
         private void OnRmcEvent(object sender, Gps.GPSRMC rmc)
         {
-            if (!rmc.Valid) return;
+            if (!rmc.Valid || rmc.Speed == null || rmc.Course == null)
+            {
+                return;
+            }
 
-            TxtTime.Text = rmc.TimeStamp.ToString("HH:mm:ss.fff");
-            TxtSpeed.Text = rmc.Speed.ToString();
-            TxtCourse.Text = rmc.Course.ToString();
+            //TODO: Maybe too much ui updates
+            Time = rmc.TimeStamp;
+            Speed = rmc.Speed.Value;
+            Course = rmc.Course.Value;
+
+            UpdateUi();
         }
 
         private void OnGgaEvent(object sender, Gps.GPSGGA gga)
         {
-            if (gga.Quality == Gps.GPSGGA.FixQuality.noFix) return;
+            if (gga.Quality == Gps.GPSGGA.FixQuality.noFix || gga.Satellites == null)
+            {
+                return;
+            }
 
-            TxtSattelites.Text = gga.Satellites.ToString();
+            Sattelites = gga.Satellites.Value;
+
+            UpdateUi();
         }
 
         #endregion
 
-        private void Log(string s)
+        private void UpdateUi()
         {
-            TxtDebug.Text += String.Format("{0}\r\n", s);
-            svDebug.ScrollToVerticalOffset(0);
+            TxtCourse.Text = Course.ToString(CultureInfo.InvariantCulture);
+            TxtSpeed.Text = Speed.ToString(CultureInfo.InvariantCulture); ;
+            TxtTime.Text = Time.ToString("HH:mm:ss.fff");
+            TxtSattelites.Text = Sattelites.ToString(CultureInfo.InvariantCulture); ;
+
+            TxtTargetSpeed.Text = TargetSpeed.ToString(CultureInfo.InvariantCulture);
+            TxtToleranceKts.Text = ToleranceSpeed.ToString(CultureInfo.InvariantCulture);
+            TxtToleranceSeconds.Text = ToleranceSeconds.ToString(CultureInfo.InvariantCulture);
         }
 
-        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        private void Log(string s)
         {
-            _servo.Dispose();
+            _debugList.Add(s);
+            DebugList.ItemsSource = _debugList.ToList();
         }
     }
 }

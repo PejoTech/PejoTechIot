@@ -66,7 +66,7 @@ namespace PejoTechIot.Autopilot.Controllers
             // degree is between 0 and 180
             // => 0.0005 per degree [(0.12 - 0.03) / 180]
 
-            var pulseWidthPerDegree = (MaximumDutyCycle - MinimumDutyCycle) / 180;
+            var pulseWidthPerDegree = (MaximumDutyCycle - MinimumDutyCycle) / 90;
 
             var dutyCycle = MinimumDutyCycle + pulseWidthPerDegree * degree;
             ServoGpioPin?.SetActiveDutyCyclePercentage(dutyCycle);
