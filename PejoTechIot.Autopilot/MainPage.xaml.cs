@@ -63,9 +63,9 @@ namespace PejoTechIot.Autopilot
         {
             ServoPosition = 0;
 
-            TxtTargetSpeed.Text = "2.5";
-            TxtToleranceKts.Text = "0.1";
-            TxtToleranceSeconds.Text = "5";
+            TargetSpeed = 2.5d;
+            ToleranceSpeed = 0.1d;
+            ToleranceSeconds = 1.0d;
 
             BtnTargetSpeedActivate.Click += BtnTargetSpeedActivate_Click;
             BtnTargetSpeedIncrease.Click += BtnTargetSpeedIncrease_Click;
@@ -112,7 +112,7 @@ namespace PejoTechIot.Autopilot
 
                 Test();
                 _servo.SetPosition(ServoPosition).AllowTimeToMove(500).Go();
-                await Task.Run(() => ServoControlTask(_servo), _servoTaskCancellationToken);
+                await Task.Run(() => ServoControlTask(), _servoTaskCancellationToken);
 
                 #endregion
             }
