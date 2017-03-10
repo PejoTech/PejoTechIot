@@ -46,6 +46,8 @@ namespace PejoTechIot.Autopilot
 
         public int ServoPosition { get; set; }
 
+        public bool Activated { get; set; }
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -112,7 +114,6 @@ namespace PejoTechIot.Autopilot
 
                 Test();
                 _servo.SetPosition(ServoPosition).AllowTimeToMove(500).Go();
-                await Task.Run(() => ServoControlTask(), _servoTaskCancellationToken);
 
                 #endregion
             }
@@ -124,7 +125,7 @@ namespace PejoTechIot.Autopilot
 
         private void ServoControlTask()
         {
-            while (true)
+            while (Activated)
             {
                 var diff = TargetSpeed - Speed;
                 if (Math.Abs(diff) > ToleranceSpeed)
@@ -133,7 +134,7 @@ namespace PejoTechIot.Autopilot
                     {
                         ServoPosition += 1;
                     }
-                    if (diff > 0.0d)
+                    if (diff > 0.0d && ServoPosition >= 0)
                     {
                         ServoPosition -= 1;
                     }
@@ -141,7 +142,7 @@ namespace PejoTechIot.Autopilot
                     _servo.SetPosition(ServoPosition).AllowTimeToMove(10).Go();
                 }
 
-                Task.Delay((int) ToleranceSeconds).Wait();
+                Task.Delay((int) (ToleranceSeconds * 1000)).Wait();
             }
         }
 
@@ -189,10 +190,21 @@ namespace PejoTechIot.Autopilot
             _servo.Dispose();
         }
 
-        private void BtnTargetSpeedActivate_Click(object sender, RoutedEventArgs e)
+        private async void BtnTargetSpeedActivate_Click(object sender, RoutedEventArgs e)
         {
-            Test();
-            Log("Activate");
+            if (Activated)
+            {
+                Activated = false;
+
+                Log("Deactivate");
+            }
+            else
+            {
+                Activated = true;
+                await Task.Run(() => ServoControlTask(), _servoTaskCancellationToken);
+
+                Log("Activate");
+            }
         }
 
         private void BtnTargetSpeedIncrease_Click(object sender, RoutedEventArgs e)
@@ -340,7 +352,7 @@ namespace PejoTechIot.Autopilot
             TxtCourse.Text = Course.ToString(CultureInfo.InvariantCulture);
             TxtSpeed.Text = Speed.ToString(CultureInfo.InvariantCulture); ;
             TxtTime.Text = Time.ToString("HH:mm:ss.fff");
-            TxtSattelites.Text = Sattelites.ToString(CultureInfo.InvariantCulture); ;
+            TxtSattelites.Text = Sattelites.ToString(CultureInfo.InvariantCulture);
 
             TxtTargetSpeed.Text = TargetSpeed.ToString(CultureInfo.InvariantCulture);
             TxtToleranceKts.Text = ToleranceSpeed.ToString(CultureInfo.InvariantCulture);
@@ -351,6 +363,11 @@ namespace PejoTechIot.Autopilot
         {
             _debugList.Add(s);
             DebugList.ItemsSource = _debugList.ToList();
+        }
+
+        private void btnTest_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(ServoTest));
         }
     }
 }
