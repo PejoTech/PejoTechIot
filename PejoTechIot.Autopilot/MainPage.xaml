@@ -24,13 +24,13 @@
             <TextBox x:Name="TargetSpeedLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Target Speed" VerticalAlignment="Top" Width="154" Margin="354,10,-436,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
             <TextBox x:Name="TargetSpeedText" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="537,10,-668,-13.2" FontSize="24" />
             <TextBox x:Name="TargetSpeedKtsLabel" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="kts" VerticalAlignment="Top" Width="43" Margin="673,10,-620.8,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
-            <TextBox x:Name="ToleranceLabel" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" Text="ToleranceSeconds" VerticalAlignment="Top" Width="164" Margin="368,132,-460.8,-117.6" FontSize="18" IsReadOnly="True" BorderThickness="0"/>
-            <TextBox x:Name="TxtToleranceSeconds" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="368,169,-460,-172.2" FontSize="24" />
+            <TextBox x:Name="ToleranceLabel" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" Text="Time Factore" VerticalAlignment="Top" Width="164" Margin="368,132,-460.8,-117.6" FontSize="18" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox x:Name="TxtTimeFactor" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="368,169,-460,-172.2" FontSize="24" />
             <Button x:Name="TargetSpeedIncreaseButton" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="368,63,-364,-78.2" FontSize="24"/>
             <Button x:Name="TargetSpeedDecreaseButton" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="460,63,-456,-78.2" FontSize="24"/>
             <Button x:Name="TargetSpeedActivateButton" Content="GO!" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="131" Margin="537,63,-616,-78.2" FontSize="24"/>
-            <Button x:Name="BtnToleranceDecreaseTime" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="368,222,-364,-237.2" FontSize="24"/>
-            <Button x:Name="BtnToleranceIncreaseTime" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="460,222,-456,-237.2" FontSize="24"/>
+            <Button x:Name="BtnTimeFactorDecrease" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="368,222,-364,-237.2" FontSize="24"/>
+            <Button x:Name="BtnTimeFactorIncrease" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="460,222,-456,-237.2" FontSize="24"/>
             <TextBox x:Name="TargetSpeedKtsabelCopy" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="t" VerticalAlignment="Top" Width="52" Margin="465,183,-365,-177.8" FontSize="18" IsReadOnly="True" BorderThickness="0" FontStyle="Italic"/>
             <TextBox x:Name="TimeLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Time" VerticalAlignment="Top" Width="109" Margin="0,10,-37.8,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
             <TextBox x:Name="TxtTime" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="114,10,-294,-13.2" FontSize="24"/>
@@ -49,18 +49,18 @@
             <TextBox x:Name="OffsetDegreeLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="°" VerticalAlignment="Top" Width="63" Margin="299,222,-267.8,-230.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
             <TextBox x:Name="TargetSpeedLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Target Speed" VerticalAlignment="Top" Width="154" Margin="354,10,-436,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
             <TextBox x:Name="TxtTargetSpeed" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="537,10,-668,-13.2" FontSize="24" />
-            <TextBox x:Name="TargetSpeedKtsLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="kts" VerticalAlignment="Top" Width="43" Margin="673,10,-620.8,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox x:Name="TargetSpeedKtsLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="km/h" VerticalAlignment="Top" Width="71" Margin="673,10,-628,-18.8" FontSize="24" IsReadOnly="True" BorderThickness="0"/>
             <TextBox x:Name="ToleranceLabel1" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" Text="ToleranceSpeed" VerticalAlignment="Top" Width="161" Margin="537,132,-626.8,-117.6" FontSize="18" IsReadOnly="True" BorderThickness="0"/>
-            <TextBox x:Name="TxtToleranceKts" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="537,169,-629,-172.2" FontSize="24" />
+            <TextBox x:Name="TxtToleranceKmh" Height="48" TextWrapping="Wrap" Text="" VerticalAlignment="Top" IsReadOnly="True" Margin="537,169,-629,-172.2" FontSize="24" />
             <Button x:Name="BtnTargetSpeedDecrease" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="368,63,-364,-78.2" FontSize="24"/>
             <Button x:Name="BtnTargetSpeedIncrease" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="460,63,-456,-78.2" FontSize="24"/>
             <Button x:Name="BtnTargetSpeedActivate" Content="GO!" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="131" Margin="537,63,-616,-78.2" FontSize="24"/>
-            <Button x:Name="BtnToleranceDecreaseKts" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="537,222,-533,-237.2" FontSize="24"/>
-            <Button x:Name="BtnToleranceIncreaseKts" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="629,222,-625,-237.2" FontSize="24"/>
-            <TextBox x:Name="TargetSpeedKtsLabel_Copy1" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="kts" VerticalAlignment="Top" Width="52" Margin="634,183,-534,-177.8" FontSize="18" IsReadOnly="True" BorderThickness="0" FontStyle="Italic"/>
+            <Button x:Name="BtnToleranceDecreaseKmh" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="537,222,-533,-237.2" FontSize="24"/>
+            <Button x:Name="BtnToleranceIncreaseKmh" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="629,222,-625,-237.2" FontSize="24"/>
+            <TextBox x:Name="TargetSpeedKtsLabel_Copy1" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="km/h" VerticalAlignment="Top" Width="52" Margin="634,183,-534,-177.8" FontSize="18" IsReadOnly="True" BorderThickness="0" FontStyle="Italic"/>
 
             <ListView x:Name="DebugList" HorizontalAlignment="Left" Height="157" Margin="10,275,-677,-431.2" VerticalAlignment="Top" Width="667"/>
-            <Button x:Name="btnTest" Content="Test" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="46" Margin="673,63,-654.2,-78.2" Click="btnTest_Click"/>
+            <Button x:Name="BtnTest" Content="Test" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="46" Margin="673,63,-654.2,-78.2"/>
         </RelativePanel>
     </Grid>
 </Page>

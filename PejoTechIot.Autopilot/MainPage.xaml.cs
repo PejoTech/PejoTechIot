@@ -69,15 +69,19 @@ namespace PejoTechIot.Autopilot
             ToleranceSpeed = 0.1d;
             ToleranceSeconds = 1.0d;
 
+            UpdateUi();
+
             BtnTargetSpeedActivate.Click += BtnTargetSpeedActivate_Click;
             BtnTargetSpeedIncrease.Click += BtnTargetSpeedIncrease_Click;
             BtnTargetSpeedDecrease.Click += BtnTargetSpeedDecrease_Click;
 
-            BtnToleranceDecreaseKts.Click += BtnToleranceDecreaseKts_Click;
-            BtnToleranceIncreaseKts.Click += BtnToleranceIncreaseKts_Click;
+            BtnToleranceDecreaseKmh.Click += BtnToleranceDecreaseKmh_Click;
+            BtnToleranceIncreaseKmh.Click += BtnToleranceIncreaseKmh_Click;
 
-            BtnToleranceDecreaseTime.Click += BtnToleranceDecreaseTime_Click;
-            BtnToleranceIncreaseTime.Click += BtnToleranceIncreaseTime_Click;
+            BtnTimeFactorDecrease.Click += BtnTimeFactorDecrease_Click;
+            BtnTimeFactorIncrease.Click += BtnTimeFactorIncrease_Click;
+
+            BtnTest.Click += BtnTest_Click;
 
             // Initialize Gps
             try
@@ -111,9 +115,7 @@ namespace PejoTechIot.Autopilot
 
                 _servo = new ServoController(5);
                 await _servo.Connect();
-
-                Test();
-                _servo.SetPosition(ServoPosition).AllowTimeToMove(500).Go();
+                _servo.SetPosition(ServoPosition).AllowTimeToMove(2000).Go();
 
                 #endregion
             }
@@ -128,7 +130,7 @@ namespace PejoTechIot.Autopilot
             while (Activated)
             {
                 var diff = TargetSpeed - Speed;
-                if (Math.Abs(diff) > ToleranceSpeed)
+                if (Math.Abs(diff) > ToleranceSpeed && Speed > 0)
                 {
                     if (diff < 0.0d)
                     {
@@ -139,21 +141,22 @@ namespace PejoTechIot.Autopilot
                         ServoPosition -= 1;
                     }
 
-                    _servo.SetPosition(ServoPosition).AllowTimeToMove(10).Go();
+                    _servo.SetPosition(ServoPosition).AllowTimeToMove(100).Go();
                 }
 
                 Task.Delay((int) (ToleranceSeconds * 1000)).Wait();
             }
         }
 
-        private void Test()
+        public void Test()
         {
-            _servo.SetPosition(0).AllowTimeToMove(1000).Go();
+            _servo.SetPosition(0).AllowTimeToMove(3000).Go();
             for (int i = 1; i < 180; i++)
             {
                 Log(string.Format("Moving servo to {0}", i));
-                _servo.SetPosition(i).AllowTimeToMove(10).Go();
+                _servo.SetPosition(i).AllowTimeToMove(100).Go();
             }
+            _servo.SetPosition(0).AllowTimeToMove(3000).Go();
         }
 
         #region Compass
@@ -229,9 +232,9 @@ namespace PejoTechIot.Autopilot
             UpdateUi();
         }
 
-        private void BtnToleranceDecreaseKts_Click(object sender, RoutedEventArgs e)
+        private void BtnToleranceDecreaseKmh_Click(object sender, RoutedEventArgs e)
         {
-            var tolerance = double.Parse(TxtToleranceKts.Text);
+            var tolerance = double.Parse(TxtToleranceKmh.Text);
             tolerance -= 0.1;
             ToleranceSpeed = tolerance;
 
@@ -240,9 +243,9 @@ namespace PejoTechIot.Autopilot
             UpdateUi();
         }
 
-        private void BtnToleranceIncreaseKts_Click(object sender, RoutedEventArgs e)
+        private void BtnToleranceIncreaseKmh_Click(object sender, RoutedEventArgs e)
         {
-            var tolerance = double.Parse(TxtToleranceKts.Text);
+            var tolerance = double.Parse(TxtToleranceKmh.Text);
             tolerance += 0.1;
             ToleranceSpeed = tolerance;
 
@@ -251,9 +254,9 @@ namespace PejoTechIot.Autopilot
             UpdateUi();
         }
 
-        private void BtnToleranceDecreaseTime_Click(object sender, RoutedEventArgs e)
+        private void BtnTimeFactorDecrease_Click(object sender, RoutedEventArgs e)
         {
-            var tolerance = double.Parse(TxtToleranceSeconds.Text);
+            var tolerance = double.Parse(TxtTimeFactor.Text);
             tolerance -= 1;
             ToleranceSeconds = tolerance;
 
@@ -262,9 +265,9 @@ namespace PejoTechIot.Autopilot
             UpdateUi();
         }
 
-        private void BtnToleranceIncreaseTime_Click(object sender, RoutedEventArgs e)
+        private void BtnTimeFactorIncrease_Click(object sender, RoutedEventArgs e)
         {
-            var tolerance = double.Parse(TxtToleranceSeconds.Text);
+            var tolerance = double.Parse(TxtTimeFactor.Text);
             tolerance += 1;
             ToleranceSeconds = tolerance;
 
@@ -281,6 +284,11 @@ namespace PejoTechIot.Autopilot
         private void DebugList_Loaded(object sender, RoutedEventArgs e)
         {
             DebugListScrollToBottom();
+        }
+
+        private void BtnTest_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(ServoTest));
         }
 
         private void DebugListScrollToBottom()
@@ -355,19 +363,14 @@ namespace PejoTechIot.Autopilot
             TxtSattelites.Text = Sattelites.ToString(CultureInfo.InvariantCulture);
 
             TxtTargetSpeed.Text = TargetSpeed.ToString(CultureInfo.InvariantCulture);
-            TxtToleranceKts.Text = ToleranceSpeed.ToString(CultureInfo.InvariantCulture);
-            TxtToleranceSeconds.Text = ToleranceSeconds.ToString(CultureInfo.InvariantCulture);
+            TxtToleranceKmh.Text = ToleranceSpeed.ToString(CultureInfo.InvariantCulture);
+            TxtTimeFactor.Text = ToleranceSeconds.ToString(CultureInfo.InvariantCulture);
         }
 
         private void Log(string s)
         {
             _debugList.Add(s);
             DebugList.ItemsSource = _debugList.ToList();
-        }
-
-        private void btnTest_Click(object sender, RoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(ServoTest));
         }
     }
 }

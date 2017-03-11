@@ -20,9 +20,9 @@ namespace PejoTechIot.Autopilot.Controllers
 
         public int Frequency { get; set; } = 50;
 
-        public double MaximumDutyCycle { get; set; } = 0.1;
+        public double MaximumDutyCycle { get; set; } = 0.12;
 
-        public double MinimumDutyCycle { get; set; } = 0.05;
+        public double MinimumDutyCycle { get; set; } = 0.03;
 
         public int ServoPin { get; set; }
 
@@ -66,7 +66,7 @@ namespace PejoTechIot.Autopilot.Controllers
             // degree is between 0 and 180
             // => 0.0005 per degree [(0.12 - 0.03) / 180]
 
-            var pulseWidthPerDegree = (MaximumDutyCycle - MinimumDutyCycle) / 90;
+            var pulseWidthPerDegree = (MaximumDutyCycle - MinimumDutyCycle) / 180;
 
             var dutyCycle = MinimumDutyCycle + pulseWidthPerDegree * degree;
             ServoGpioPin?.SetActiveDutyCyclePercentage(dutyCycle);
