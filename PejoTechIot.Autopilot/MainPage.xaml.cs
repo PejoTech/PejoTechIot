@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.I2c;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using AdafruitClassLibrary;
@@ -29,7 +30,7 @@ namespace PejoTechIot.Autopilot
         private ObservableCollection<string> _debugList;
 
         public static Hmc5883L Compass { get; set; }
-        
+
         public double Course { get; set; }
 
         public double Speed { get; set; }
@@ -47,6 +48,8 @@ namespace PejoTechIot.Autopilot
         public int ServoPosition { get; set; }
 
         public bool Activated { get; set; }
+
+        public bool UpdatingUi { get; set; } = true;
 
         public MainPage()
         {
@@ -68,8 +71,6 @@ namespace PejoTechIot.Autopilot
             TargetSpeed = 2.5d;
             ToleranceSpeed = 0.1d;
             ToleranceSeconds = 1.0d;
-
-            UpdateUi();
 
             BtnTargetSpeedActivate.Click += BtnTargetSpeedActivate_Click;
             BtnTargetSpeedIncrease.Click += BtnTargetSpeedIncrease_Click;
@@ -117,6 +118,20 @@ namespace PejoTechIot.Autopilot
                 await _servo.Connect();
                 _servo.SetPosition(ServoPosition).AllowTimeToMove(2000).Go();
 
+                await Task.Run(async () =>
+                {
+                    while (UpdatingUi)
+                    {
+                        await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                           CoreDispatcherPriority.Normal, () =>
+                           {
+                               UpdateUi();
+                           });
+
+                        Task.Delay(1000).Wait();
+                    }
+                }, _servoTaskCancellationToken);
+
                 #endregion
             }
             catch (Exception ex)
@@ -124,6 +139,8 @@ namespace PejoTechIot.Autopilot
                 System.Diagnostics.Debug.WriteLine(string.Format("Error starting app: {0}", ex.Message));
             }
         }
+
+        #region Servo
 
         private void ServoControlTask()
         {
@@ -144,7 +161,7 @@ namespace PejoTechIot.Autopilot
                     _servo.SetPosition(ServoPosition).AllowTimeToMove(100).Go();
                 }
 
-                Task.Delay((int) (ToleranceSeconds * 1000)).Wait();
+                Task.Delay((int)(ToleranceSeconds * 1000)).Wait();
             }
         }
 
@@ -158,6 +175,8 @@ namespace PejoTechIot.Autopilot
             }
             _servo.SetPosition(0).AllowTimeToMove(3000).Go();
         }
+
+        #endregion
 
         #region Compass
 
@@ -180,17 +199,19 @@ namespace PejoTechIot.Autopilot
             {
                 Log("No I2C controllers are connected.");
             }
-
         }
 
         #endregion
 
         #region Controls
 
-        
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             _servo.Dispose();
+            _gps.DisconnectFromUART();
+
+            Activated = false;
+            UpdatingUi = false;
         }
 
         private async void BtnTargetSpeedActivate_Click(object sender, RoutedEventArgs e)
@@ -198,15 +219,14 @@ namespace PejoTechIot.Autopilot
             if (Activated)
             {
                 Activated = false;
-
-                Log("Deactivate");
+                Log("Deactivated");
             }
             else
             {
                 Activated = true;
-                await Task.Run(() => ServoControlTask(), _servoTaskCancellationToken);
+                Log("Activated");
 
-                Log("Activate");
+                await Task.Run(() => ServoControlTask(), _servoTaskCancellationToken);
             }
         }
 
@@ -321,7 +341,7 @@ namespace PejoTechIot.Autopilot
             if (_gps.Connected)
             {
                 await _gps.SetSentencesReportingAsync(0, 1, 0, 1, 0, 0);
-                await _gps.SetUpdateFrequencyAsync(10);  //1Hz.  Change to 5 for 5Hz. Change to 10 for 10Hz.  Change to 0.1 for 0.1Hz.
+                await _gps.SetUpdateFrequencyAsync(10); //1Hz.  Change to 5 for 5Hz. Change to 10 for 10Hz.  Change to 0.1 for 0.1Hz.
                 _gps.StartReading();
             }
         }
@@ -337,8 +357,6 @@ namespace PejoTechIot.Autopilot
             Time = rmc.TimeStamp;
             Speed = rmc.Speed.Value * 1.852d;
             Course = rmc.Course.Value;
-
-            UpdateUi();
         }
 
         private void OnGgaEvent(object sender, Gps.GPSGGA gga)
@@ -349,8 +367,6 @@ namespace PejoTechIot.Autopilot
             }
 
             Sattelites = gga.Satellites.Value;
-
-            UpdateUi();
         }
 
         #endregion
@@ -358,7 +374,7 @@ namespace PejoTechIot.Autopilot
         private void UpdateUi()
         {
             TxtCourse.Text = Course.ToString(CultureInfo.InvariantCulture);
-            TxtSpeed.Text = Speed.ToString(CultureInfo.InvariantCulture); ;
+            TxtSpeed.Text = Speed.ToString(CultureInfo.InvariantCulture);
             TxtTime.Text = Time.ToString("HH:mm:ss.fff");
             TxtSattelites.Text = Sattelites.ToString(CultureInfo.InvariantCulture);
 
