@@ -335,7 +335,7 @@ namespace PejoTechIot.Autopilot
 
             //TODO: Maybe too much ui updates
             Time = rmc.TimeStamp;
-            Speed = rmc.Speed.Value;
+            Speed = rmc.Speed.Value * 1.852d;
             Course = rmc.Course.Value;
 
             UpdateUi();
