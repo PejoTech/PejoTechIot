@@ -10,6 +10,7 @@ using Windows.Devices.I2c;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using AdafruitClassLibrary;
 using PejoTechIot.Autopilot.Controllers;
 
@@ -22,12 +23,9 @@ namespace PejoTechIot.Autopilot
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private Gps _gps;
+        public Gps Gps { get; set; }
 
-        static ServoController _servo;
-        private readonly CancellationToken _servoTaskCancellationToken = CancellationToken.None;
-
-        private ObservableCollection<string> _debugList;
+        public ServoController ServoController { get; set; }
 
         public static Hmc5883L Compass { get; set; }
 
@@ -57,11 +55,6 @@ namespace PejoTechIot.Autopilot
 
             Loaded += Page_Loaded;
             Unloaded += Page_Unloaded;
-
-            DebugList.SelectionChanged += DebugList_Changed;
-            DebugList.Loaded += DebugList_Loaded;
-
-            _debugList = new ObservableCollection<string>();
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -83,6 +76,8 @@ namespace PejoTechIot.Autopilot
             BtnTimeFactorIncrease.Click += BtnTimeFactorIncrease_Click;
 
             BtnTest.Click += BtnTest_Click;
+
+            TxtDebug.TextChanged += TxtDebug_TextChanged;
 
             // Initialize Gps
             try
@@ -112,11 +107,11 @@ namespace PejoTechIot.Autopilot
 
                 #endregion
 
-                #region Servo
+                #region ServoController
 
-                _servo = new ServoController(5);
-                await _servo.Connect();
-                _servo.SetPosition(ServoPosition).AllowTimeToMove(2000).Go();
+                ServoController = new ServoController(5);
+                await ServoController.Connect();
+                ServoController.SetPosition(ServoPosition).AllowTimeToMove(2000).Go();
 
                 await Task.Run(async () =>
                 {
@@ -128,9 +123,9 @@ namespace PejoTechIot.Autopilot
                                UpdateUi();
                            });
 
-                        Task.Delay(1000).Wait();
+                        Task.Delay(2000).Wait();
                     }
-                }, _servoTaskCancellationToken);
+                });
 
                 #endregion
             }
@@ -140,7 +135,15 @@ namespace PejoTechIot.Autopilot
             }
         }
 
-        #region Servo
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            ServoController.Dispose();
+
+            Activated = false;
+            UpdatingUi = false;
+        }
+
+        #region ServoController
 
         private void ServoControlTask()
         {
@@ -151,29 +154,39 @@ namespace PejoTechIot.Autopilot
                 {
                     if (diff < 0.0d)
                     {
-                        ServoPosition += 1;
+                        Log("{0} km/h off; decreasing 1 degree");
+                        ServoPosition -= 1;
                     }
                     if (diff > 0.0d && ServoPosition >= 0)
                     {
-                        ServoPosition -= 1;
+                        Log("{0} km/h off; increasing 1 degree");
+                        ServoPosition += 1;
                     }
 
-                    _servo.SetPosition(ServoPosition).AllowTimeToMove(100).Go();
+                    ServoController.SetPosition(ServoPosition).AllowTimeToMove(100).Go();
+                }
+                else
+                {
+                    Log("Speed withing tolerance; doing nothing");
                 }
 
                 Task.Delay((int)(ToleranceSeconds * 1000)).Wait();
             }
+
+            Log("Speed control loop ended. Setting servo back to 0 degree");
+            ServoController.SetPosition(ServoPosition).AllowTimeToMove(2000).Go();
+
         }
 
         public void Test()
         {
-            _servo.SetPosition(0).AllowTimeToMove(3000).Go();
+            ServoController.SetPosition(0).AllowTimeToMove(3000).Go();
             for (int i = 1; i < 180; i++)
             {
                 Log(string.Format("Moving servo to {0}", i));
-                _servo.SetPosition(i).AllowTimeToMove(100).Go();
+                ServoController.SetPosition(i).AllowTimeToMove(100).Go();
             }
-            _servo.SetPosition(0).AllowTimeToMove(3000).Go();
+            ServoController.SetPosition(0).AllowTimeToMove(3000).Go();
         }
 
         #endregion
@@ -204,15 +217,6 @@ namespace PejoTechIot.Autopilot
         #endregion
 
         #region Controls
-
-        private void Page_Unloaded(object sender, RoutedEventArgs e)
-        {
-            _servo.Dispose();
-            _gps.DisconnectFromUART();
-
-            Activated = false;
-            UpdatingUi = false;
-        }
 
         private async void BtnTargetSpeedActivate_Click(object sender, RoutedEventArgs e)
         {
@@ -296,33 +300,21 @@ namespace PejoTechIot.Autopilot
             UpdateUi();
         }
 
-        private void DebugList_Changed(object sender, SelectionChangedEventArgs e)
+        private void TxtDebug_TextChanged(object sender, TextChangedEventArgs e)
         {
-            DebugListScrollToBottom();
-        }
-
-        private void DebugList_Loaded(object sender, RoutedEventArgs e)
-        {
-            DebugListScrollToBottom();
+            var grid = (Grid)VisualTreeHelper.GetChild(TxtDebug, 0);
+            for (var i = 0; i <= VisualTreeHelper.GetChildrenCount(grid) - 1; i++)
+            {
+                object obj = VisualTreeHelper.GetChild(grid, i);
+                if (!(obj is ScrollViewer)) continue;
+                ((ScrollViewer)obj).ChangeView(0.0f, ((ScrollViewer)obj).ExtentHeight, 1.0f);
+                break;
+            }
         }
 
         private void BtnTest_Click(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(ServoTest));
-        }
-
-        private void DebugListScrollToBottom()
-        {
-            if (DebugList.Items == null) return;
-
-            var selectedIndex = DebugList.Items.Count - 1;
-
-            if (selectedIndex < 0) return;
-
-            DebugList.SelectedIndex = selectedIndex;
-
-            DebugList.UpdateLayout();
-            DebugList.ScrollIntoView(DebugList.SelectedItem);
         }
 
         #endregion
@@ -331,18 +323,18 @@ namespace PejoTechIot.Autopilot
 
         private async void StartGps()
         {
-            _gps = new Gps();
+            Gps = new Gps();
 
-            _gps.RMCEvent += OnRmcEvent;
-            _gps.GGAEvent += OnGgaEvent;
+            Gps.RMCEvent += OnRmcEvent;
+            Gps.GGAEvent += OnGgaEvent;
 
-            await _gps.ConnectToUARTAsync(9600);
+            await Gps.ConnectToUARTAsync(9600);
 
-            if (_gps.Connected)
+            if (Gps.Connected)
             {
-                await _gps.SetSentencesReportingAsync(0, 1, 0, 1, 0, 0);
-                await _gps.SetUpdateFrequencyAsync(10); //1Hz.  Change to 5 for 5Hz. Change to 10 for 10Hz.  Change to 0.1 for 0.1Hz.
-                _gps.StartReading();
+                await Gps.SetSentencesReportingAsync(0, 1, 0, 1, 0, 0);
+                await Gps.SetUpdateFrequencyAsync(10); //1Hz.  Change to 5 for 5Hz. Change to 10 for 10Hz.  Change to 0.1 for 0.1Hz.
+                Gps.StartReading();
             }
         }
 
@@ -385,8 +377,7 @@ namespace PejoTechIot.Autopilot
 
         private void Log(string s)
         {
-            _debugList.Add(s);
-            DebugList.ItemsSource = _debugList.ToList();
+            TxtDebug.Text += string.Format("{0}\r\n", s);
         }
     }
 }

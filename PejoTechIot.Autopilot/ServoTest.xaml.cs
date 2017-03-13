@@ -30,6 +30,7 @@ namespace PejoTechIot.Autopilot
             this.InitializeComponent();
 
             Loaded += Page_Loaded;
+            Unloaded += Page_Unoaded;
 
             BtnActivate.Click += BtnActivate_Click;
             BtnTest.Click += BtnTest_Click;
@@ -51,6 +52,11 @@ namespace PejoTechIot.Autopilot
             await _servo.Connect();
 
             _servo.SetPosition(ServoPosition).AllowTimeToMove(2000).Go();
+        }
+
+        private void Page_Unoaded(object sender, RoutedEventArgs e)
+        {
+            _servo.Dispose();
         }
 
         private void ServoPositionSlider_Changed(object sender, RangeBaseValueChangedEventArgs e)
