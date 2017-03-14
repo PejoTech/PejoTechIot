@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.AppService;
 using Windows.Devices.Enumeration;
 using Windows.Devices.I2c;
 using Windows.UI.Core;
@@ -15,13 +12,8 @@ using Windows.UI.Xaml.Media;
 using AdafruitClassLibrary;
 using PejoTechIot.Autopilot.Controllers;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
-
 namespace PejoTechIot.Autopilot
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
         public Gps Gps { get; set; }
@@ -161,25 +153,27 @@ namespace PejoTechIot.Autopilot
             {
                 var speed = SpeedAverage && SpeedList.Any() ? SpeedList.Average() : Speed;
                 SpeedList.Clear();
-                var diff = TargetSpeed - Speed;
+
+                var diff = TargetSpeed - speed;
+
                 if (Math.Abs(diff) > ToleranceSpeed && speed > 0)
                 {
                     if (diff < 0.0d)
                     {
-                        LogAsync(string.Format("{0} km/h off; decreasing 1 degree to match {1}", diff, TargetSpeed));
                         ServoPosition -= 1;
+                        LogAsync(string.Format("{0} km/h off; decreasing by 1 degree to {1}", diff, ServoPosition));
                     }
                     if (diff > 0.0d && ServoPosition >= 0)
                     {
-                        LogAsync(string.Format("{0} km/h off; increasing 1 degree to match {1}", diff, TargetSpeed));
                         ServoPosition += 1;
+                        LogAsync(string.Format("{0} km/h off; increasing by 1 degree to {1}", diff, ServoPosition));
                     }
 
                     ServoController.SetPosition(ServoPosition).AllowTimeToMove(100).Go();
                 }
                 else
                 {
-                    LogAsync(string.Format("Speed of {0} withing tolerance or 0; doing nothing", TargetSpeed));
+                    LogAsync(string.Format("Speed of {0} withing tolerance or 0; doing nothing", speed));
                 }
 
                 Task.Delay((int)(ToleranceSeconds * 1000)).Wait();
@@ -189,17 +183,6 @@ namespace PejoTechIot.Autopilot
 
             ServoPosition = 0;
             ServoController.SetPosition(0).AllowTimeToMove(2000).Go();
-        }
-
-        public void Test()
-        {
-            ServoController.SetPosition(0).AllowTimeToMove(3000).Go();
-            for (int i = 1; i < 180; i++)
-            {
-                LogAsync(string.Format("Moving servo to {0}", i));
-                ServoController.SetPosition(i).AllowTimeToMove(100).Go();
-            }
-            ServoController.SetPosition(0).AllowTimeToMove(3000).Go();
         }
 
         #endregion
@@ -383,7 +366,7 @@ namespace PejoTechIot.Autopilot
             TxtSpeed.Text = SpeedAverage && SpeedList.Any()
                 ? SpeedList.Average().ToString(CultureInfo.InvariantCulture)
                 : Speed.ToString(CultureInfo.InvariantCulture);
-            TxtTime.Text = Time.ToString("HH:mm:ss.fff");
+            TxtTime.Text = Time.ToString("HH:mm:ss");
             TxtSattelites.Text = Sattelites.ToString(CultureInfo.InvariantCulture);
             TxtTargetSpeed.Text = TargetSpeed.ToString(CultureInfo.InvariantCulture);
             TxtToleranceKmh.Text = ToleranceSpeed.ToString(CultureInfo.InvariantCulture);
