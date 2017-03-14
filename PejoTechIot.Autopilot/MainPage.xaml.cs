@@ -341,10 +341,11 @@ namespace PejoTechIot.Autopilot
                 return;
             }
 
-            //TODO: Maybe too much ui updates
+            var speed = rmc.Speed.Value * 1.852d;
+            Speed = Math.Round(speed, 1);
+            SpeedList.Add(speed);
+
             Time = rmc.TimeStamp;
-            Speed = rmc.Speed.Value * 1.852d;
-            SpeedList.Add(rmc.Speed.Value);
             Course = rmc.Course.Value;
         }
 
