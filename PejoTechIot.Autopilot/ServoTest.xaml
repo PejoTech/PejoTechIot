@@ -27,6 +27,7 @@
         <TextBox x:Name="TargetSpeedKtsLabel_Copy1" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="km/h" VerticalAlignment="Top" Width="52" Margin="289,202,0,0" FontSize="18" IsReadOnly="True" BorderThickness="0" FontStyle="Italic"/>
         <TextBox x:Name="TxtTargetSpeed" HorizontalAlignment="Left" Margin="24,202,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top"/>
         <TextBox x:Name="TxtToleranceSpeed" HorizontalAlignment="Left" Margin="213,202,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top"/>
+        <Button x:Name="BtnQuit" Content="Quit" HorizontalAlignment="Left" Margin="534,264,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Page>

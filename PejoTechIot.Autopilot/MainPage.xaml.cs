@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.AppService;
 using Windows.Devices.Enumeration;
 using Windows.Devices.I2c;
 using Windows.UI.Core;
@@ -51,12 +52,16 @@ namespace PejoTechIot.Autopilot
 
         public bool UpdatingUi { get; set; } = true;
 
+        public bool SpeedAverage { get; set; }
+
         public MainPage()
         {
             this.InitializeComponent();
 
             Loaded += Page_Loaded;
             Unloaded += Page_Unloaded;
+
+            SpeedList = new List<double>();
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -80,6 +85,9 @@ namespace PejoTechIot.Autopilot
             BtnTest.Click += BtnTest_Click;
 
             TxtDebug.TextChanged += TxtDebug_TextChanged;
+
+            ChbSpeedAverage.Checked += ChbSpeedAverage_Changed;
+            ChbSpeedAverage.Unchecked += ChbSpeedAverage_Changed;
 
             // Initialize Gps
             try
@@ -151,18 +159,19 @@ namespace PejoTechIot.Autopilot
         {
             while (Activated)
             {
-                var speed = ChbAverage.IsChecked != null && ChbAverage.IsChecked.Value ? SpeedList.Average() : Speed;
+                var speed = SpeedAverage && SpeedList.Any() ? SpeedList.Average() : Speed;
+                SpeedList.Clear();
                 var diff = TargetSpeed - Speed;
                 if (Math.Abs(diff) > ToleranceSpeed && speed > 0)
                 {
                     if (diff < 0.0d)
                     {
-                        Log("{0} km/h off; decreasing 1 degree");
+                        LogAsync(string.Format("{0} km/h off; decreasing 1 degree to match {1}", diff, TargetSpeed));
                         ServoPosition -= 1;
                     }
                     if (diff > 0.0d && ServoPosition >= 0)
                     {
-                        Log("{0} km/h off; increasing 1 degree");
+                        LogAsync(string.Format("{0} km/h off; increasing 1 degree to match {1}", diff, TargetSpeed));
                         ServoPosition += 1;
                     }
 
@@ -170,14 +179,16 @@ namespace PejoTechIot.Autopilot
                 }
                 else
                 {
-                    Log("Speed withing tolerance; doing nothing");
+                    LogAsync(string.Format("Speed of {0} withing tolerance or 0; doing nothing", TargetSpeed));
                 }
 
                 Task.Delay((int)(ToleranceSeconds * 1000)).Wait();
             }
 
-            Log("Speed control loop ended. Setting servo back to 0 degree");
-            ServoController.SetPosition(ServoPosition).AllowTimeToMove(2000).Go();
+            LogAsync("Speed control loop ended. Setting servo back to 0 degree");
+
+            ServoPosition = 0;
+            ServoController.SetPosition(0).AllowTimeToMove(2000).Go();
         }
 
         public void Test()
@@ -185,7 +196,7 @@ namespace PejoTechIot.Autopilot
             ServoController.SetPosition(0).AllowTimeToMove(3000).Go();
             for (int i = 1; i < 180; i++)
             {
-                Log(string.Format("Moving servo to {0}", i));
+                LogAsync(string.Format("Moving servo to {0}", i));
                 ServoController.SetPosition(i).AllowTimeToMove(100).Go();
             }
             ServoController.SetPosition(0).AllowTimeToMove(3000).Go();
@@ -212,7 +223,7 @@ namespace PejoTechIot.Autopilot
             }
             else
             {
-                Log("No I2C controllers are connected.");
+                LogAsync("No I2C controllers are connected.");
             }
         }
 
@@ -225,14 +236,14 @@ namespace PejoTechIot.Autopilot
             if (Activated)
             {
                 Activated = false;
-                Log("Deactivated");
+                LogAsync("Deactivated");
             }
             else
             {
                 Activated = true;
-                Log("Activated");
+                LogAsync("Activated");
 
-                await Task.Run(() => ServoControlTask(), _servoTaskCancellationToken);
+                await Task.Run(() => ServoControlTask());
             }
         }
 
@@ -241,8 +252,7 @@ namespace PejoTechIot.Autopilot
             var targetSpeed = double.Parse(TxtTargetSpeed.Text);
             targetSpeed += 0.1;
             TargetSpeed = targetSpeed;
-
-            Log("Target speed up 0.1 mph");
+            LogAsync("Target speed up 0.1 mph");
 
             UpdateUi();
         }
@@ -252,8 +262,7 @@ namespace PejoTechIot.Autopilot
             var targetSpeed = double.Parse(TxtTargetSpeed.Text);
             targetSpeed -= 0.1;
             TargetSpeed = targetSpeed;
-
-            Log("Target speed down 0.1 mph");
+            LogAsync("Target speed down 0.1 mph");
 
             UpdateUi();
         }
@@ -263,8 +272,7 @@ namespace PejoTechIot.Autopilot
             var tolerance = double.Parse(TxtToleranceKmh.Text);
             tolerance -= 0.1;
             ToleranceSpeed = tolerance;
-
-            Log("ToleranceSpeed speed down 0.1 mph");
+            LogAsync("ToleranceSpeed speed down 0.1 mph");
 
             UpdateUi();
         }
@@ -274,8 +282,7 @@ namespace PejoTechIot.Autopilot
             var tolerance = double.Parse(TxtToleranceKmh.Text);
             tolerance += 0.1;
             ToleranceSpeed = tolerance;
-
-            Log("ToleranceSpeed speed up 0.1 mph");
+            LogAsync("ToleranceSpeed speed up 0.1 mph");
 
             UpdateUi();
         }
@@ -285,8 +292,7 @@ namespace PejoTechIot.Autopilot
             var tolerance = double.Parse(TxtTimeFactor.Text);
             tolerance -= 1;
             ToleranceSeconds = tolerance;
-
-            Log("ToleranceSpeed seconds -1");
+            LogAsync("ToleranceSpeed seconds -1");
 
             UpdateUi();
         }
@@ -296,8 +302,7 @@ namespace PejoTechIot.Autopilot
             var tolerance = double.Parse(TxtTimeFactor.Text);
             tolerance += 1;
             ToleranceSeconds = tolerance;
-
-            Log("ToleranceSpeed seconds +1");
+            LogAsync("ToleranceSpeed seconds +1");
 
             UpdateUi();
         }
@@ -317,6 +322,12 @@ namespace PejoTechIot.Autopilot
         private void BtnTest_Click(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(ServoTest));
+        }
+
+        private void ChbSpeedAverage_Changed(object sender, RoutedEventArgs e)
+        {
+            SpeedAverage = ChbSpeedAverage.IsChecked ?? false;
+            LogAsync(SpeedAverage ? "Measuring average speed" : "Measuring speed of moment");
         }
 
         #endregion
@@ -369,18 +380,23 @@ namespace PejoTechIot.Autopilot
         private void UpdateUi()
         {
             TxtCourse.Text = Course.ToString(CultureInfo.InvariantCulture);
-            TxtSpeed.Text = Speed.ToString(CultureInfo.InvariantCulture);
+            TxtSpeed.Text = SpeedAverage && SpeedList.Any()
+                ? SpeedList.Average().ToString(CultureInfo.InvariantCulture)
+                : Speed.ToString(CultureInfo.InvariantCulture);
             TxtTime.Text = Time.ToString("HH:mm:ss.fff");
             TxtSattelites.Text = Sattelites.ToString(CultureInfo.InvariantCulture);
-
             TxtTargetSpeed.Text = TargetSpeed.ToString(CultureInfo.InvariantCulture);
             TxtToleranceKmh.Text = ToleranceSpeed.ToString(CultureInfo.InvariantCulture);
             TxtTimeFactor.Text = ToleranceSeconds.ToString(CultureInfo.InvariantCulture);
         }
 
-        private void Log(string s)
+        private async void LogAsync(string s)
         {
-            TxtDebug.Text += string.Format("{0}\r\n", s);
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                CoreDispatcherPriority.Normal, () =>
+                {
+                    TxtDebug.Text += string.Format("{0}\r\n", s);
+                });
         }
     }
 }

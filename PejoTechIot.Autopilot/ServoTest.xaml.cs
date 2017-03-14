@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -34,6 +35,7 @@ namespace PejoTechIot.Autopilot
 
             BtnActivate.Click += BtnActivate_Click;
             BtnTest.Click += BtnTest_Click;
+            BtnQuit.Click += BtnQuit_Click;
             SpeedTestSlider.ValueChanged += SpeedTestSlider_Changed;
             ServoPositionSlider.ValueChanged += ServoPositionSlider_Changed;
         }
@@ -85,6 +87,11 @@ namespace PejoTechIot.Autopilot
                 _servo.SetPosition(i).AllowTimeToMove(100).Go();
             }
             _servo.SetPosition(0).AllowTimeToMove(3000).Go();
+        }
+
+        private void BtnQuit_Click(object sender, RoutedEventArgs e)
+        {
+            CoreApplication.Exit();
         }
 
         private async void BtnActivate_Click(object sender, RoutedEventArgs e)

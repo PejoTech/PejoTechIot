@@ -47,7 +47,7 @@
             <TextBox x:Name="TargetSpeedKtsLabel_Copy1" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="km/h" VerticalAlignment="Top" Width="52" Margin="686,183,-586,-177.8" FontSize="18" IsReadOnly="True" BorderThickness="0" FontStyle="Italic"/>
             <Button x:Name="BtnTest" Content="Test" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="46" Margin="673,63,-654.2,-78.2"/>
             <TextBox x:Name="TxtDebug" HorizontalAlignment="Left" Height="157" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="744" Margin="10,275,-682.8,-400" AcceptsReturn="True" IsReadOnly="True"/>
-            <CheckBox x:Name="ChbAverage" Content="Average" HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Width="120" Margin="469,159,-469,-159"/>
+            <CheckBox x:Name="ChbSpeedAverage" Content="Average" HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Width="120" Margin="469,159,-469,-159"/>
         </RelativePanel>
     </Grid>
 </Page>
