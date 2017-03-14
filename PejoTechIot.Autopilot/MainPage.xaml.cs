@@ -33,6 +33,8 @@ namespace PejoTechIot.Autopilot
 
         public double Speed { get; set; }
 
+        public List<double> SpeedList { get; set; }
+
         public DateTime Time { get; set; }
 
         public int Sattelites { get; set; }
@@ -149,8 +151,9 @@ namespace PejoTechIot.Autopilot
         {
             while (Activated)
             {
+                var speed = ChbAverage.IsChecked != null && ChbAverage.IsChecked.Value ? SpeedList.Average() : Speed;
                 var diff = TargetSpeed - Speed;
-                if (Math.Abs(diff) > ToleranceSpeed && Speed > 0)
+                if (Math.Abs(diff) > ToleranceSpeed && speed > 0)
                 {
                     if (diff < 0.0d)
                     {
@@ -175,7 +178,6 @@ namespace PejoTechIot.Autopilot
 
             Log("Speed control loop ended. Setting servo back to 0 degree");
             ServoController.SetPosition(ServoPosition).AllowTimeToMove(2000).Go();
-
         }
 
         public void Test()
@@ -348,6 +350,7 @@ namespace PejoTechIot.Autopilot
             //TODO: Maybe too much ui updates
             Time = rmc.TimeStamp;
             Speed = rmc.Speed.Value * 1.852d;
+            SpeedList.Add(rmc.Speed.Value);
             Course = rmc.Course.Value;
         }
 
