@@ -79,15 +79,31 @@ namespace PejoTechIot.Autopilot
             this.Frame.Navigate(typeof(MainPage));
         }
 
-        private void BtnTest_Click(object sender, RoutedEventArgs e)
+        private async void BtnTest_Click(object sender, RoutedEventArgs e)
+        {
+            TestServo = !TestServo;
+
+            if (TestServo)
+            {
+                await Task.Run(() => TestServoTask());
+            }
+        }
+
+        private void TestServoTask()
         {
             _servo.SetPosition(0).AllowTimeToMove(3000).Go();
-            for (int i = 1; i < 180; i++)
+            while (TestServo)
             {
-                _servo.SetPosition(i).AllowTimeToMove(100).Go();
+                for (int i = 1; i < 180; i++)
+                {
+                    _servo.SetPosition(i).AllowTimeToMove(100).Go();
+                }
+
+                _servo.SetPosition(0).AllowTimeToMove(3000).Go();
             }
-            _servo.SetPosition(0).AllowTimeToMove(3000).Go();
         }
+
+        public bool TestServo { get; set; }
 
         private void BtnQuit_Click(object sender, RoutedEventArgs e)
         {

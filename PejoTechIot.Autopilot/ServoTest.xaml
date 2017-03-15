@@ -7,26 +7,26 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="#FF2D2D2D">
         <Button x:Name="BtnTest" Content="Test" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <Button x:Name="BtnActivate" Content="Activate" HorizontalAlignment="Left" Margin="74,10,0,0" VerticalAlignment="Top"/>
         <Button x:Name="BtnBack" Content="Back" HorizontalAlignment="Left" Margin="167,10,0,0" VerticalAlignment="Top" Click="BtnBack_Click"/>
         <Slider x:Name="SpeedTestSlider" Maximum="10"  HorizontalAlignment="Left" Margin="10,107,0,0" VerticalAlignment="Top" Width="364"/>
-        <TextBox x:Name="TxtTestSpeed" HorizontalAlignment="Left" Margin="393,114,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBox1" HorizontalAlignment="Left" Margin="473,114,0,0" TextWrapping="Wrap" Text="Speed" VerticalAlignment="Top" Width="111"/>
-        <TextBox x:Name="TxtServoPosition" HorizontalAlignment="Left" Margin="393,60,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBox" HorizontalAlignment="Left" Margin="473,60,0,0" TextWrapping="Wrap" Text="ServoPosition" VerticalAlignment="Top"/>
+        <TextBox x:Name="TxtTestSpeed" HorizontalAlignment="Left" Margin="393,114,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Background="{x:Null}"/>
+        <TextBox x:Name="textBox1" HorizontalAlignment="Left" Margin="473,114,0,0" TextWrapping="Wrap" Text="Speed" VerticalAlignment="Top" Width="111" Background="{x:Null}"/>
+        <TextBox x:Name="TxtServoPosition" HorizontalAlignment="Left" Margin="393,60,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Background="{x:Null}"/>
+        <TextBox x:Name="textBox" HorizontalAlignment="Left" Margin="473,60,0,0" TextWrapping="Wrap" Text="ServoPosition" VerticalAlignment="Top" Background="{x:Null}"/>
         <Slider x:Name="ServoPositionSlider" Maximum="180"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="364" Margin="10,53,0,0"/>
-        <TextBox x:Name="TargetSpeedLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Target Speed" VerticalAlignment="Top" Width="154" Margin="10,157,0,0" FontSize="18" IsReadOnly="True" BorderThickness="0"/>
-        <TextBox x:Name="TargetSpeedKtsLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="km/h" VerticalAlignment="Top" Width="71" Margin="100,196,0,0" FontSize="18" IsReadOnly="True" BorderThickness="0" FontStyle="Italic"/>
-        <TextBox x:Name="ToleranceLabel1" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" Text="ToleranceSpeed" VerticalAlignment="Top" Width="161" Margin="213,159,0,0" FontSize="18" IsReadOnly="True" BorderThickness="0"/>
+        <TextBox x:Name="TargetSpeedLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="Target Speed" VerticalAlignment="Top" Width="154" Margin="10,157,0,0" FontSize="18" IsReadOnly="True" BorderThickness="0" Background="{x:Null}"/>
+        <TextBox x:Name="TargetSpeedKtsLabel1" HorizontalAlignment="Left" Height="48" TextWrapping="Wrap" Text="km/h" VerticalAlignment="Top" Width="71" Margin="100,196,0,0" FontSize="18" IsReadOnly="True" BorderThickness="0" FontStyle="Italic" Background="{x:Null}"/>
+        <TextBox x:Name="ToleranceLabel1" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" Text="ToleranceSpeed" VerticalAlignment="Top" Width="161" Margin="213,159,0,0" FontSize="18" IsReadOnly="True" BorderThickness="0" Background="{x:Null}"/>
         <Button x:Name="BtnTargetSpeedDecrease" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="24,249,0,0" FontSize="24"/>
         <Button x:Name="BtnTargetSpeedIncrease" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="116,249,0,0" FontSize="24"/>
         <Button x:Name="BtnToleranceDecreaseKts" Content="-" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="213,249,0,0" FontSize="24"/>
         <Button x:Name="BtnToleranceIncreaseKts" Content="+" HorizontalAlignment="Left" Height="48" VerticalAlignment="Top" Width="48" Margin="305,249,0,0" FontSize="24"/>
-        <TextBox x:Name="TargetSpeedKtsLabel_Copy1" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="km/h" VerticalAlignment="Top" Width="52" Margin="289,202,0,0" FontSize="18" IsReadOnly="True" BorderThickness="0" FontStyle="Italic"/>
-        <TextBox x:Name="TxtTargetSpeed" HorizontalAlignment="Left" Margin="24,202,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top"/>
-        <TextBox x:Name="TxtToleranceSpeed" HorizontalAlignment="Left" Margin="213,202,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top"/>
+        <TextBox x:Name="TargetSpeedKtsLabel_Copy1" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="km/h" VerticalAlignment="Top" Width="52" Margin="289,202,0,0" FontSize="18" IsReadOnly="True" BorderThickness="0" FontStyle="Italic" Background="{x:Null}"/>
+        <TextBox x:Name="TxtTargetSpeed" HorizontalAlignment="Left" Margin="24,202,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Background="{x:Null}"/>
+        <TextBox x:Name="TxtToleranceSpeed" HorizontalAlignment="Left" Margin="213,202,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Background="{x:Null}"/>
         <Button x:Name="BtnQuit" Content="Quit" HorizontalAlignment="Left" Margin="534,264,0,0" VerticalAlignment="Top"/>
 
     </Grid>

@@ -139,6 +139,7 @@ namespace PejoTechIot.Autopilot
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
+            //Gps.DisconnectFromUART();
             ServoController.Dispose();
 
             Activated = false;
