@@ -98,6 +98,7 @@
     <Compile Include="Controllers\HMC5883L.cs" />
     <Compile Include="Controllers\IServoController.cs" />
     <Compile Include="Controllers\ServoController.cs" />
+    <Compile Include="Helper\Haversine.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

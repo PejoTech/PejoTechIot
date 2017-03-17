@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
+using Windows.Devices.Geolocation;
 using Windows.Devices.I2c;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -11,6 +12,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using AdafruitClassLibrary;
 using PejoTechIot.Autopilot.Controllers;
+using PejoTechIot.Autopilot.Helper;
 
 namespace PejoTechIot.Autopilot
 {
@@ -44,7 +46,14 @@ namespace PejoTechIot.Autopilot
 
         public bool UpdatingUi { get; set; } = true;
 
-        public bool SpeedAverage { get; set; }
+        public AutopilotOperationMode OpertationMode { get; set; }
+
+        public List<Position> TrackCoordinates { get; set; }
+
+        public double TrackSpeed { get; set; }
+
+        public double AverageSpeed { get; set; }
+
 
         public MainPage()
         {
@@ -54,6 +63,7 @@ namespace PejoTechIot.Autopilot
             Unloaded += Page_Unloaded;
 
             SpeedList = new List<double>();
+            TrackCoordinates = new List<Position>();
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -78,8 +88,12 @@ namespace PejoTechIot.Autopilot
 
             TxtDebug.TextChanged += TxtDebug_TextChanged;
 
-            ChbSpeedAverage.Checked += ChbSpeedAverage_Changed;
-            ChbSpeedAverage.Unchecked += ChbSpeedAverage_Changed;
+            var modes = Enum.GetValues(typeof(AutopilotOperationMode)).Cast<AutopilotOperationMode>();
+            CmbMode.ItemsSource = modes.ToList();
+
+            OpertationMode = 0;
+            CmbMode.SelectedIndex = 0;
+            CmbMode.SelectionChanged += CmbModeOnSelectionChanged;
 
             // Initialize Gps
             try
@@ -146,14 +160,47 @@ namespace PejoTechIot.Autopilot
             UpdatingUi = false;
         }
 
+        public void CalculateSpeedAverages()
+        {
+            var coords = TrackCoordinates.ToList();
+            var speeds = SpeedList.ToList();
+
+            TrackCoordinates.Clear();
+            SpeedList.Clear();
+
+            TrackSpeed = GetAverageTrackSpeed(coords);
+            AverageSpeed = speeds.Any() ? Math.Round(speeds.Average(), 1) : 0.0d;
+        }
+
+        private double GetAverageTrackSpeed(List<Position> coords)
+        {
+            if (!coords.Any())
+            {
+                return 0.0d;
+            }
+
+            var firstPosition = coords.First();
+            var lastPosition = coords.Last();
+
+            var distance = Haversine.Distance(firstPosition, lastPosition, DistanceType.Kilometers);
+
+            var speed = distance / (ToleranceSeconds * 3600);
+
+            return Math.Round(speed, 1);
+        }
+
         #region ServoController
 
         private void ServoControlTask()
         {
             while (Activated)
             {
-                var speed = SpeedAverage && SpeedList.Any() ? SpeedList.Average() : Speed;
-                SpeedList.Clear();
+                // Doing this here for now
+                CalculateSpeedAverages();
+
+                var speed = OpertationMode == AutopilotOperationMode.Average && SpeedList.Any()
+                    ? SpeedList.Average()
+                    : OpertationMode == AutopilotOperationMode.Track ? TrackSpeed : Speed;
 
                 var diff = TargetSpeed - speed;
 
@@ -169,7 +216,6 @@ namespace PejoTechIot.Autopilot
                         ServoPosition += 1;
                         LogAsync(string.Format("{0} km/h off; increasing by 1 degree to {1}", diff, ServoPosition));
                     }
-
                     ServoController.SetPosition(ServoPosition).AllowTimeToMove(100).Go();
                 }
                 else
@@ -308,10 +354,9 @@ namespace PejoTechIot.Autopilot
             this.Frame.Navigate(typeof(ServoTest));
         }
 
-        private void ChbSpeedAverage_Changed(object sender, RoutedEventArgs e)
+        private void CmbModeOnSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
         {
-            SpeedAverage = ChbSpeedAverage.IsChecked ?? false;
-            LogAsync(SpeedAverage ? "Measuring average speed" : "Measuring speed of moment");
+            OpertationMode = (AutopilotOperationMode)selectionChangedEventArgs.AddedItems.FirstOrDefault();
         }
 
         #endregion
@@ -358,6 +403,12 @@ namespace PejoTechIot.Autopilot
             }
 
             Sattelites = gga.Satellites.Value;
+
+            TrackCoordinates.Add(new Position
+            {
+                Latitude = gga.Latitude.GetValueOrDefault(),
+                Longitude = gga.Longitude.GetValueOrDefault()
+            });
         }
 
         #endregion
@@ -365,9 +416,11 @@ namespace PejoTechIot.Autopilot
         private void UpdateUi()
         {
             TxtCourse.Text = Course.ToString(CultureInfo.InvariantCulture);
-            TxtSpeed.Text = SpeedAverage && SpeedList.Any()
-                ? SpeedList.Average().ToString(CultureInfo.InvariantCulture)
-                : Speed.ToString(CultureInfo.InvariantCulture);
+            TxtSpeed.Text = Speed.ToString(CultureInfo.InvariantCulture);
+
+            TxtAverage.Text = AverageSpeed.ToString(CultureInfo.InvariantCulture);
+            TxtTrackSpeed.Text = TrackSpeed.ToString(CultureInfo.InvariantCulture);
+
             TxtTime.Text = Time.ToString("HH:mm:ss");
             TxtSattelites.Text = Sattelites.ToString(CultureInfo.InvariantCulture);
             TxtTargetSpeed.Text = TargetSpeed.ToString(CultureInfo.InvariantCulture);
@@ -383,5 +436,13 @@ namespace PejoTechIot.Autopilot
                     TxtDebug.Text += string.Format("{0}\r\n", s);
                 });
         }
+    }
+
+    public enum AutopilotOperationMode
+    {
+        Direct,
+        Average,
+        Track,
+        Percentile
     }
 }
